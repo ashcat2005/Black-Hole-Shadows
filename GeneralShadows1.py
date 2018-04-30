@@ -19,45 +19,56 @@ class Shadow(object):
         
         # Event Horizon
         self.rH = self.M + np.sqrt(self.M**2 - self.a**2) 
+                        
+        # Auxiliar Function
+        def Delta(r):
+            return r**2 - 2*self.M* r + self.a**2
         
-        # Range of the parameter r
-        self.r = np.linspace(self.rH ,4*self.rH,10000000)
-        
-        # Constants of motion
-        
-        self.Delta = self.r**2 - 2*self.M*self.r + self.a**2
         # Angular Momentum
-        self.xi = (self.M*(self.r**2 - self.a**2) 
-                - self.r*self.Delta)/(self.a*(self.r - self.M))  
+        def xi(r):
+            return (self.M*(r**2 - self.a**2) 
+                - r*Delta(r))/(self.a*(r - self.M))  
         # Carter Constant
-        self.eta = ((self.r**3)*(4*self.M*self.Delta 
-            - self.r*(self.r-self.M)**2))/(self.a**2 * (self.r - self.M)**2)   
+        def eta(r):
+            return ((r**3)*(4*self.M*Delta(r) 
+            - r*(r-self.M)**2))/(self.a**2 * (r - self.M)**2)   
+        
         
         # Radius of the corresponding Schwarzschild BH
         self.Rcircle = np.sqrt(27 * self.M**2)
         
-        #Celestial coordinates
-        self.alpha = - self.xi / np.sin(self.inc)
+        # Obtaining the Celestial Coordinates
         
-        self.arg = self.eta + self.a**2 * np.cos(self.inc)**2 
-        - self.xi**2 * (np.cos(self.inc)/np.sin(self.inc))**2
+        # Argument in the square root of beta
+        def arg(r):
+            return eta(r) + self.a**2 * np.cos(self.inc)**2 
+            - (xi(r))**2 * (np.cos(self.inc)/np.sin(self.inc))**2
         
-        self.beta = np.sqrt(self.arg)
+        # Root finding of the function arg(r) to define the limits in the plot        
+        r0 = newton(arg, self.rH)       
+        r1 = newton(arg, 4*self.rH)
+                
+        # Range of the parameter r for the plot 
+        self.r = np.linspace(r0 ,r1,100000)
         
-        '''def f(r):
-            arg1 =self.eta + self.a**2 * np.cos(self.inc)**2 
-            - self.xi**2 * (np.cos(self.inc)/np.sin(self.inc))**2
-            return arg1'''
+        # Coordinate alpha
+        self.alpha = - xi(self.r) / np.sin(self.inc)
         
-        #print(f(5))
+        #coordinate beta
+        self.beta = np.sqrt(arg(self.r))
+        
+        print('Ready for the parameter a=',self.a)
 
-M =1.
+
+
+
+
+# Parameters of the BH       
+M = 1.
 a = [0.3, 0.6, 0.9, 0.99]
 
 # Radius of the corresponding Schwarzschild BH
 Rcircle = np.sqrt(27 * M**2)
-incl = np.pi/2
-print(incl)
 
 # Plot of the orbit
 fig, ax = plt.subplots()
@@ -79,9 +90,13 @@ ax.grid(True, linestyle='-.')
 t = np.linspace(0, 2*np.pi, 100000)
 ax.plot(Rcircle * np.cos(t), Rcircle * np.sin(t),'k--', label='a = 0')
 
+# Inizialization of the variables for the plots
 labels=[]
 colors=[]
 bh =[]
+
+# Main Loop for plotting
+
 for i in range(0, len(a)):
     # Calculation of the Shadow
     bh.append(Shadow(M , a=a[i]))

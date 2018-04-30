@@ -44,12 +44,6 @@ class Shadow(object):
         
         self.beta = np.sqrt(self.arg)
         
-        '''def f(r):
-            arg1 =self.eta + self.a**2 * np.cos(self.inc)**2 
-            - self.xi**2 * (np.cos(self.inc)/np.sin(self.inc))**2
-            return arg1'''
-        
-        #print(f(5))
 
 M =1.
 a = [0.3, 0.6, 0.9, 0.99]
@@ -57,7 +51,6 @@ a = [0.3, 0.6, 0.9, 0.99]
 # Radius of the corresponding Schwarzschild BH
 Rcircle = np.sqrt(27 * M**2)
 incl = np.pi/2
-print(incl)
 
 # Plot of the orbit
 fig, ax = plt.subplots()
